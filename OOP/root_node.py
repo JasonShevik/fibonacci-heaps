@@ -1,3 +1,4 @@
+from .basic_node import BasicNode
 
 
 class RootNode:
