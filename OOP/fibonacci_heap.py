@@ -1,13 +1,11 @@
-from .basic_node import BasicNode
-from .heap_node import HeapNode
-from .root_node import RootNode
+from .node import Node
 import uuid
 
 
 class FibonacciHeap:
     def __init__(self, heap_type):
         self._current_root = None
-        self._top_node = None
+        self._primary_node = None
         self._heap_hash = {}
 
         if heap_type not in ["max", "min"]:
@@ -15,12 +13,17 @@ class FibonacciHeap:
         else:
             self._is_max_heap = heap_type == 'max'
 
+    ### Modifying Methods ###
+
     def add_node(self, priority, unique_id=None, payload: object = None):
         """
         Adds a new, correctly placed, node to the FibonacciHeap with the user-specified values for its attributes.
+
+        To-do: Allow strings for priority. Allow user to define comparison method.
+
         :param priority: A numeric value that indicates the priority of this node.
         :param unique_id: A unique ID that will be used to access this node quickly via the heap_hash dictionary.
-        :param payload: A custom object that the user may store in the node to add versatility to the structure.
+        :param payload: Any object that the user may store in the node to add versatility to the structure.
         :return: The unique ID, so that the user may store it to keep track of specific nodes they care about.
         """
         # Handling the priority
@@ -34,7 +37,7 @@ class FibonacciHeap:
             raise ValueError(f"Invalid unique ID: ID {unique_id} is already in use.")
 
         # Create the node using the parameters
-        adding_node = BasicNode(priority=priority, unique_id=unique_id, payload=payload)
+        adding_node = Node(priority=priority, unique_id=unique_id, payload=payload)
 
         ### Operations for maintaining the FibonacciHeap ###
         # Add the node to the heap_hash using the unique_id as the key
@@ -42,12 +45,11 @@ class FibonacciHeap:
 
         # Place the new node in the appropriate place within the Fibonacci Heap
         if self._current_root is None:
-            self._current_root = RootNode(basic_node=adding_node, left=None, right=None)
+            self._current_root = adding_node
         else:
             # Figure out where in the fibonacci heap to put this node.
             # This may involve running a separate method.
 
-        # Return the unique_id so that users may store it to keep track of this node if they want to.
         return unique_id
 
     def update_priority(self, unique_id, new_priority):
@@ -60,16 +62,36 @@ class FibonacciHeap:
         :param new_priority: The new priority value that the node will be updated to have.
         :return:
         """
-        return True
+        return False
 
-    def get_top_node(self):
+    ### Getting Methods ###
+
+    def get_primary_unique_id(self):
         """
-        Getter method for the _top_node.
+        Getter method for the unique ID of the primary node.
         Highest priority if self.is_max_heap is True.
         Lowest priority if self.is_max_heap is False.
-        :return: self._top_node
+        :return: The unique ID of the primary node.
         """
-        return self._top_node
+        return self._primary_node.unique_id
+
+    def get_primary_priority(self):
+        """
+        Getter method for the priority of the primary node.
+        Highest priority if self.is_max_heap is True.
+        Lowest priority if self.is_max_heap is False.
+        :return: The priority of the primary node.
+        """
+        return self._primary_node.priority
+
+    def get_primary_payload(self):
+        """
+        Getter method for the payload of the primary node.
+        Highest priority if self.is_max_heap is True.
+        Lowest priority if self.is_max_heap is False.
+        :return: The payload of the primary node.
+        """
+        return self._primary_node.payload
 
     def extract(self):
         """
@@ -78,9 +100,9 @@ class FibonacciHeap:
         Lowest priority if self.is_max_heap is False.
         :return: A tuple of the extracted node's unique_id, priority, and payload.
         """
-        unique_id = self._top_node.get_unique_id()
-        priority = self._top_node.get_priority()
-        payload = self._top_node.get_payload()
+        unique_id = self._top_node.unique_id
+        priority = self._top_node.priority
+        payload = self._top_node.payload
 
         # <Delete the _top_node>
         # <Restructure the FibonacciHeap>
@@ -92,17 +114,19 @@ class FibonacciHeap:
     #Perhaps implement this portion in C or something?
     #    return True
 
+    ### Storage Methods ###
+
     def export_heap(self, filepath):
         """
         Exports the current state of the Fibonacci heap to a file for storage and use in a new session.
         :return: True if no errors, False if errors.
         """
-        return True
+        return False
 
     def load_heap(self, filepath):
         """
         Loads and initializes a Fibonacci heap from the file specified by the filepath.
         :return: The FibonacciHeap that was stored in the file specified by the filepath.
         """
-        return FibonacciHeap
+        return False
 
