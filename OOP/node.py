@@ -13,4 +13,17 @@ class Node:
         self._parent = parent
         self._left = left
         self._right = right
-
+        
+    def add_child(self, new_child):
+        """
+        
+        :param new_child: 
+        :return: 
+        """
+            
+            
+            
+            
+            
+            
+            

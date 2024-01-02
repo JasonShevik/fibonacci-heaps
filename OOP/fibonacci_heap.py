@@ -1,5 +1,7 @@
 from .node import Node
 import uuid
+import pickle
+import json
 
 
 class FibonacciHeap:
@@ -114,19 +116,67 @@ class FibonacciHeap:
     #Perhaps implement this portion in C or something?
     #    return True
 
-    ### Storage Methods ###
+    ### Storage ###
 
     def export_heap(self, filepath):
         """
-        Exports the current state of the Fibonacci heap to a file for storage and use in a new session.
-        :return: True if no errors, False if errors.
+        Exports the current state of the Fibonacci heap to a pickle file for storage and use in a new session.
+        :param filepath: The path and name of the file to export as. Since this is handled by pickle, this method
+        checks for '.pkl' in the filepath, and adds it if not present.
         """
-        return False
+        if filepath[-4:] is not ".pkl":
+            filepath = filepath + ".pkl"
+        with open(filepath, 'wb') as file:
+            pickle.dump(self, file)
 
-    def load_heap(self, filepath):
+    def export_json(self, filepath):
         """
-        Loads and initializes a Fibonacci heap from the file specified by the filepath.
-        :return: The FibonacciHeap that was stored in the file specified by the filepath.
+        Exports the current state of the Fibonacci heap to a json file for storage and use in a new session.
+        :param filepath: The path and name of the file to export as. Since this is a json export, this method
+        checks for '.json' in the filepath, and adds it if not present.
         """
-        return False
+
+        # Here is where I traverse the FibonacciHeap, self, and put it all in a dictionary
+        json_dict = {}
+
+        if filepath[-5:] is not ".json":
+            filepath = filepath + ".json"
+        with open(filepath, 'w') as file:
+            json.dump(json_dict, file)
+
+
+def import_heap(filepath):
+    """
+    Loads and initializes a Fibonacci heap from the pickle file specified by the filepath.
+    :param filepath: The path and name of the file to export as. Since this is handled by pickle, this method
+    checks for '.pkl' in the filepath, and adds it if not present.
+    :return: The FibonacciHeap that was stored in the file specified by the filepath.
+    """
+    if filepath[-4:] is not ".pkl":
+        filepath = filepath + ".pkl"
+    with open(filepath, 'rb') as file:
+        return pickle.load(file)
+
+def import_json(filepath):
+    """
+    Loads and initializes a Fibonacci heap from the file specified by the filepath.
+    This takes a json string, and converts it to a FibonacciHeap, which means initializing the heap and adding
+    the nodes one by one from the file. This is computationally more expensive than import_heap.
+    :param filepath: The path and name of the file to export as. Since this is a json export, this method
+    checks for '.json' in the filepath, and adds it if not present.
+    :return: The FibonacciHeap that was stored in the file specified by the filepath.
+    """
+    if filepath[-5:] is not ".json":
+        filepath = filepath + ".json"
+    with open(filepath, 'r') as file:
+        loaded_json = json.load(file)
+        return_heap = FibonacciHeap(loaded_json["heap_type"]) # This is a stand-in. Fix later.
+
+        # Go on to create the entire FibonacciHeap using the json. You will likely need to add nodes one by one.
+        # I will assume that a saved FibonacciHeap is already correct (maintains the heap property)
+        # Therefore, you should NOT use the add_node() method. Rather, create Node objects and connect them.
+
+        return return_heap
+
+        
 
